@@ -3,15 +3,19 @@ import pandas as pd
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
-from src.key_manager import disable_key, delete_key
-from src.user_manager import delete_user
+from src.key_manager import enable_key, disable_key, delete_key
+from src.user_manager import delete_user, disable_console_login
 
 
 def process_items(items, action, object_type, profile, max_threads=10):
     """Process keys or users concurrently."""
     with ThreadPoolExecutor(max_threads) as executor:
         if object_type == "key":
-            if action == "disable":
+            if action == "enable":
+                futures = {
+                    executor.submit(enable_key, profile, item): item for item in items
+                }
+            elif action == "disable":
                 futures = {
                     executor.submit(disable_key, profile, item): item for item in items
                 }
@@ -19,10 +23,16 @@ def process_items(items, action, object_type, profile, max_threads=10):
                 futures = {
                     executor.submit(delete_key, profile, item): item for item in items
                 }
-        elif object_type == "user" and action == "delete":
-            futures = {
-                executor.submit(delete_user, profile, item): item for item in items
-            }
+        elif object_type == "user":
+            if action == "disable":
+                futures = {
+                    executor.submit(disable_console_login, profile, item): item
+                    for item in items
+                }
+            elif action == "delete":
+                futures = {
+                    executor.submit(delete_user, profile, item): item for item in items
+                }
         else:
             raise ValueError(f"Unsupported object and action: {object_type}, {action}")
 
@@ -43,8 +53,8 @@ def main():
         "--action",
         type=str,
         required=True,
-        choices=["disable", "delete"],
-        help="The action to perform (disable or delete).",
+        choices=["enable", "disable", "delete"],
+        help="The action to perform (enable, disable, or delete).",
     )
     parser.add_argument(
         "--csv-file-path",

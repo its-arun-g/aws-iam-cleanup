@@ -134,6 +134,15 @@ def __perform_delete_user(iam_client, username):
     return
 
 
+def disable_console_login(profile, username):
+    """Disable console login for a user by deleting their login profile."""
+    session = boto3.Session(profile_name=profile)
+    iam_client = session.client("iam")
+    __delete_login_profile(iam_client, username)
+    logger.info(f"Console login disabled for user {username}.")
+    return
+
+
 def delete_user(profile, username):
     session = boto3.Session(profile_name=profile)
     iam_client = session.client("iam")

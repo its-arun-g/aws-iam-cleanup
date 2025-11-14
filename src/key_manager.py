@@ -6,6 +6,24 @@ from src.utils import get_logger
 logger = get_logger()
 
 
+def enable_key(profile, access_key):
+    """Enable a single AWS access key."""
+    username = get_username_from_key(profile, access_key)
+    session = boto3.Session(profile_name=profile)
+    iam_client = session.client("iam")
+    if not username:
+        return
+    try:
+        iam_client.update_access_key(
+            AccessKeyId=access_key, Status="Active", UserName=username
+        )
+        logger.info(f"Enabled key {access_key} for user {username}.")
+        return
+    except Exception as e:
+        logger.error(f"Failed to enable key {access_key}: {e}")
+        return
+
+
 def disable_key(profile, access_key):
     """Disable a single AWS access key."""
     username = get_username_from_key(profile, access_key)
