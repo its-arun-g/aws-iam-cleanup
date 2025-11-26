@@ -6,10 +6,9 @@ from src.utils import get_logger
 logger = get_logger()
 
 
-def enable_key(profile, access_key):
+def enable_key(session, access_key):
     """Enable a single AWS access key."""
-    username = get_username_from_key(profile, access_key)
-    session = boto3.Session(profile_name=profile)
+    username = get_username_from_key(session, access_key)
     iam_client = session.client("iam")
     if not username:
         return
@@ -24,10 +23,9 @@ def enable_key(profile, access_key):
         return
 
 
-def disable_key(profile, access_key):
+def disable_key(session, access_key):
     """Disable a single AWS access key."""
-    username = get_username_from_key(profile, access_key)
-    session = boto3.Session(profile_name=profile)
+    username = get_username_from_key(session, access_key)
     iam_client = session.client("iam")
     if not username:
         return
@@ -42,10 +40,9 @@ def disable_key(profile, access_key):
         return
 
 
-def delete_key(profile, access_key):
+def delete_key(session, access_key):
     """Delete a single AWS access key."""
-    username = get_username_from_key(profile, access_key)
-    session = boto3.Session(profile_name=profile)
+    username = get_username_from_key(session, access_key)
     iam_client = session.client("iam")
     if not username:
         return
