@@ -4,5 +4,5 @@ jmespath==1.0.1
 python-dateutil==2.9.0.post0
 s3transfer==0.10.4
 six==1.17.0
-urllib3==2.2.3
+urllib3>=2.2.4   
 pandas==2.2.2
